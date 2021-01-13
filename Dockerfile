@@ -8,6 +8,7 @@ WORKDIR /usr/src/app
 COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
-COPY . .
+COPY app.rb ./
+EXPOSE 3000
 
-# CMD ["./your-daemon-or-script.rb"]
+CMD ["bundle", "exec", "ruby", "./app.rb"]

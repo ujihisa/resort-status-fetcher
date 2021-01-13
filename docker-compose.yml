@@ -3,11 +3,12 @@ services:
   resort-status-fetcher:
     container_name: resort-status-fetcher
     image: ruby:3.0.0
-    ports:
-    - 3000
     volumes:
       - .:/usr/src/app
     working_dir: /usr/src/app
+  app:
+    container_name: app
+    build: .
   yaichi:
     image: mtsmfm/yaichi:1.7.0
     ports:
