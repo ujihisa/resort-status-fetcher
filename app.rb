@@ -4,7 +4,7 @@ require 'net/http'
 require 'google/cloud/firestore'
 
 set(:bind, '0.0.0.0')
-set(:port, ENV['PORT'] || '3000')
+set(:port, ENV['PORT'] || '8080')
 
 firestore = ::Google::Cloud::Firestore.new(
   project_id: 'devs-sandbox',
@@ -22,5 +22,5 @@ get '/' do
   doc = firestore.col('ujihisa-test').doc(now.to_date.iso8601)
   doc.set({now.iso8601 => grouse})
 
-  { now.iso8601 => grouse }
+  { now.iso8601 => grouse }.to_json
 end

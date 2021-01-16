@@ -9,7 +9,6 @@ COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
 COPY app.rb ./
-ENV PORT=8080
-EXPOSE ${PORT}
+EXPOSE 8080
 
 CMD ["bundle", "exec", "ruby", "./app.rb"]
