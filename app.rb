@@ -8,7 +8,7 @@ set(:port, ENV['PORT'] || '8080')
 
 firestore = ::Google::Cloud::Firestore.new(
   project_id: 'devs-sandbox',
-  credentials: 'devs-sandbox-5941dd8999bb.json')
+  **(File.exist?('devs-sandbox-5941dd8999bb.json') ? { credentials: 'devs-sandbox-5941dd8999bb.json' } : {}))
 
 get '/' do
   doc = Nokogiri::HTML(Net::HTTP.get(URI('https://www.grousemountain.com/current_conditions')))
@@ -19,8 +19,13 @@ get '/' do
   }
 
   now = Time.now
-  doc = firestore.col('ujihisa-test').doc(now.to_date.iso8601)
-  doc.set({now.iso8601 => grouse})
+  firestore.col('ujihisa-test').add({
+    time: now,
+    grouse: grouse,
+  })
 
-  { now.iso8601 => grouse }.to_json
+  {
+    time: now.iso8601,
+    grouse: grouse,
+  }.to_json
 end
