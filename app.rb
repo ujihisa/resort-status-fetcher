@@ -1,4 +1,4 @@
-require './lib/fetcher'
+require_relative 'lib/fetcher'
 require 'sinatra'
 require 'google/cloud/firestore'
 
