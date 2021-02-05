@@ -1,6 +1,5 @@
+require './lib/fetcher'
 require 'sinatra'
-require 'nokogiri'
-require 'net/http'
 require 'google/cloud/firestore'
 
 set(:bind, '0.0.0.0')
@@ -11,12 +10,7 @@ firestore = ::Google::Cloud::Firestore.new(
   **(File.exist?('devs-sandbox-5941dd8999bb.json') ? { credentials: 'devs-sandbox-5941dd8999bb.json' } : {}))
 
 get '/' do
-  doc = Nokogiri::HTML(Net::HTTP.get(URI('https://www.grousemountain.com/current_conditions')))
-  grouse = {
-    runs: doc.at('#runs')./('li').map { _1.text.strip.split(/\n\n\n/).map(&:strip) }.to_json,
-    lifts: doc.at('#lifts')./('li').map { _1.text.strip.split(/\n+/).map(&:strip) }.to_json,
-    parks: doc.at('#parks')./('li').tap { _1.search('.//div').remove }.map { _1.text.strip.split(/\n+/).map(&:strip) }.to_json,
-  }
+  grouse = Fetcher.grouse()
 
   now = Time.now
   firestore.col('ujihisa-test').add({
