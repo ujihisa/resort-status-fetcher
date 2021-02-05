@@ -9,6 +9,7 @@ COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
 COPY app.rb ./
+COPY lib ./lib
 EXPOSE 8080
 
 CMD ["bundle", "exec", "ruby", "./app.rb"]
