@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+require 'json'
 require 'nokogiri'
 require 'net/http'
 
@@ -12,3 +15,6 @@ module Fetcher
   end
 end
 
+if __FILE__ == $0
+  puts JSON.pretty_generate(Fetcher.grouse())
+end
