@@ -29,18 +29,30 @@ def show_after(time)
   end
 end
 
-def show_all
+def dump_tickets_tsv
   firestore = ::Google::Cloud::Firestore.new(
     project_id: 'devs-sandbox',
     credentials: 'devs-sandbox-5941dd8999bb.json')
 
   col = firestore.col('ujihisa-test')
-  col.get.select { _1[:grouse_tickets] }.sort_by { _1[:time] }.each do |x|
-    p x[:time]
-    pp x[:grouse_tickets].sort_by(&:first)
+  data = col.get.select { _1[:grouse_tickets] }
+
+  all_dates = data.flat_map { _1[:grouse_tickets].keys }.uniq.sort
+  quantities_by_time = data.sort_by { _1[:time] }.map {|x|
+    [
+      x[:time].localtime(Time.zone_offset('PST')),
+      *all_dates.map {|date| x[:grouse_tickets][date] }
+    ]
+  }
+
+  # header
+  puts ['time', *all_dates].join("\t")
+  # body
+  quantities_by_time.each do |line|
+    puts line.join("\t")
   end
 end
 
 # show_differences()
 # show_after(Time.parse('2021-01-27T12:32:02-08:00'))
-show_all()
+dump_tickets_tsv()
