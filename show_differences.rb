@@ -29,5 +29,18 @@ def show_after(time)
   end
 end
 
+def show_all
+  firestore = ::Google::Cloud::Firestore.new(
+    project_id: 'devs-sandbox',
+    credentials: 'devs-sandbox-5941dd8999bb.json')
+
+  col = firestore.col('ujihisa-test')
+  col.get.select { _1[:grouse_tickets] }.sort_by { _1[:time] }.each do |x|
+    p x[:time]
+    pp x[:grouse_tickets].sort_by(&:first)
+  end
+end
+
 # show_differences()
-show_after(Time.parse('2021-01-27T12:32:02-08:00'))
+# show_after(Time.parse('2021-01-27T12:32:02-08:00'))
+show_all()

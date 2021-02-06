@@ -16,7 +16,7 @@ module Fetcher
   end
 
   def self.grouse_tickets(date)
-    (date .. (date + 8)).to_h {|date|
+    (date .. (date + 9)).to_h {|date|
       response = JSON.parse(Net::HTTP.get(URI("https://www.grousemountain.com/products/894/max_available?date=#{date}")))
       [date, response['TRAMTIMETRAM-UPTUT-C1']['qty_rem']]
     }
