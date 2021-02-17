@@ -53,6 +53,37 @@ def dump_tickets_tsv
   end
 end
 
+def chart_tickets
+  require 'set'
+  require 'date'
+  holidays = %i[2021-02-02 2021-02-15].to_set.freeze
+
+  firestore = ::Google::Cloud::Firestore.new(
+    project_id: 'devs-sandbox',
+    credentials: 'devs-sandbox-5941dd8999bb.json')
+
+  col = firestore.col('ujihisa-test')
+  data = col.order(:time, :desc).get.select { _1[:grouse_tickets] }
+
+  dates = data.flat_map { _1[:grouse_tickets].keys }.uniq.sort
+  hash = dates.group_by { holidays.member?(_1) ? 'Holiday' : Date.parse(_1.name).strftime('%A') }
+  hash = hash.transform_values {|dates|
+    dates.map {|date|
+      data.map {|x| x[:grouse_tickets]&.[](date) }.compact
+    }
+  }
+
+  matrix = hash.flat_map {|day, ticketss|
+    ticketss.map {|tickets|
+      [day, *tickets]
+    }
+  }
+
+  matrix.each do |xs|
+    puts xs.join("\t")
+  end
+end
+
 # show_differences()
-# show_after(Time.parse('2021-01-27T12:32:02-08:00'))
-dump_tickets_tsv()
+# show_after(Time.parse('2021-02-08T09:02:02-08:00'))
+chart_tickets()
